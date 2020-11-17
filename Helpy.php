@@ -21,10 +21,7 @@ class Helpy
         $dec_point = $option['dec_point'] ?? ',';
         $thousands_sep = $option['thousands_sep'] ?? ' ';
 
-        if ($local == 'fr') {
-            return number_format($number, $decimals, $dec_point, $thousands_sep);
-        } else {
-            return number_format($number, $decimals, $dec_point, $thousands_sep);
-        }
+        return number_format($number, $decimals, $dec_point, $thousands_sep);
+        
     }
 }
