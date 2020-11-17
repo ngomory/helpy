@@ -13,4 +13,18 @@ class Helpy
             return date($format, strtotime($datetime));
         }
     }
+    
+    static function formatNumber(float $number, string $local = 'fr', array $option = ['decimals' => 2, 'dec_point' => ',', 'thousands_sep' => ' '])
+    {
+
+        $decimals = (int)$option['decimals'] ?? 2;
+        $dec_point = $option['dec_point'] ?? ',';
+        $thousands_sep = $option['thousands_sep'] ?? ' ';
+
+        if ($local == 'fr') {
+            return number_format($number, $decimals, $dec_point, $thousands_sep);
+        } else {
+            return number_format($number, $decimals, $dec_point, $thousands_sep);
+        }
+    }
 }
