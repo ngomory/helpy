@@ -1,7 +1,7 @@
 {
     "name": "ngomory/helpy",
     "type": "library",
-    "version": "1.0.0",
+    "version": "dev-main",
     "description": "PHP package grouping together a multitude of small utility functions",
     "keywords": [
         "ngomory",
@@ -19,7 +19,8 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0"
+        "php": "^7.3|^8.0",
+        "ngomory/helpy": "dev-main"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5.10"
