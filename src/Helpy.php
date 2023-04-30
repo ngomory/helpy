@@ -26,4 +26,24 @@ class Helpy
 
         return number_format($number, $decimals, $decimal_separator, $thousands_separator);
     }
+
+    static function strRandom(int $length = 16, array $options = []): string
+    {
+
+        $characters = $options['characters'] ?? '';
+
+        if (empty($characters)) {
+            $characters = '0123456789';
+            $characters .= 'abcdefghijklmnopqrstuvwxyz';
+            $characters .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        }
+
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
 }
