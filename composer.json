@@ -1,0 +1,29 @@
+{
+    "name": "ngomory/helpy",
+    "type": "library",
+    "description": "PHP package grouping together a multitude of small utility functions",
+    "keywords": [
+        "ngomory",
+        "helpy",
+        "utility"
+    ],
+    "version": "1.0.0",
+    "homepage": "https://github.com/ngomory/helpy",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ngomory Touré",
+            "email": "info@ngomory.ci",
+            "homepage": "https://ngomory.ci",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ngomory\\Helpy\\": "src"
+        }
+    }
+}
