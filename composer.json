@@ -18,9 +18,6 @@
             "role": "Developer"
         }
     ],
-    "require": {
-        "php": "^7.3|^8.0"
-    },
     "autoload": {
         "psr-4": {
             "Ngomory\\Helpy\\": "src"
