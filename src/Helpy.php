@@ -1,6 +1,6 @@
 <?php
 
-namespace App\myClass;
+namespace Ngomory;
 
 class Helpy
 {
