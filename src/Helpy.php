@@ -6,31 +6,6 @@ class Helpy
 {
 
     /**
-     * dateToLocal
-     *
-     * @param string|null $datetime String datetime value or null. can have the value 'now'.
-     * @param string $local String local code fr|en.
-     * @param boolean $time Display or not the date.
-     * @return string
-     */
-    public static function dateToLocal($datetime, string $local = 'fr', bool $showTime = true): string
-    {
-        switch ($local) {
-            case 'fr':
-                $toFormat = 'd/m/Y' . ($showTime ? ' à H:i:s' : '');
-                return self::dateFormat($datetime, $toFormat);
-                break;
-            case 'en':
-                $toFormat = 'Y-m-d' . ($showTime ? ' at H:i:s' : '');
-                return self::dateFormat($datetime, $toFormat);
-                break;
-            default:
-                return '';
-                break;
-        }
-    }
-
-    /**
      * dateFormat
      *
      * @param string|null $datetime String datetime value or null. can have the value 'now'.
@@ -45,14 +20,66 @@ class Helpy
         return $date ? $date->format($toFormat) : '';
     }
 
-    public static function formatNumber(float $number, array $option = [])
+    /**
+     * dateToLocal
+     *
+     * @param string|null $datetime String datetime value or null. can have the value 'now'.
+     * @param string $local String local code fr|en.
+     * @param boolean $time Display or not the date.
+     * @return string
+     */
+    public static function dateToLocal($datetime, string $local = 'fr', bool $showTime = true): string
     {
+        switch ($local) {
+            case 'fr':
+                $toFormat = 'd/m/Y' . ($showTime ? ' \à H:i:s' : '');
+                return self::dateFormat($datetime, $toFormat);
+                break;
+            case 'en':
+                $toFormat = 'Y-m-d' . ($showTime ? ' \a\t H:i:s' : '');
+                return self::dateFormat($datetime, $toFormat);
+                break;
+            default:
+                return '';
+                break;
+        }
+    }
 
-        $decimals = (int)$option['decimals'] ?? 2;
-        $decimal_separator = $option['decimal_separator'] ?? ',';
-        $thousands_separator = $option['thousands_separator'] ?? ' ';
+    /**
+     * numberFormat
+     *
+     * @param float $number
+     * @param integer $decimals Number of digits decimal
+     * @param string $decimalSeparator
+     * @param string $thousandSeparator
+     * @return string
+     */
+    public static function numberFormat(float $number, int $decimals = 2, string $decimalSeparator = ',', string $thousandSeparator = ' '): string
+    {
+        return number_format($number, $decimals, $decimalSeparator, $thousandSeparator);
+    }
 
-        return number_format($number, $decimals, $decimal_separator, $thousands_separator);
+    /**
+     * numberToLocal
+     *
+     * @param float $number
+     * @param string $local String local code fr|en
+     * @param integer $decimals Number of digits decimal
+     * @return string
+     */
+    public static function numberToLocal(float $number, string $local = 'fr', int $decimals = 2): string
+    {
+        switch ($local) {
+            case 'fr':
+                return self::numberFormat($number, $decimals);
+                break;
+            case 'en':
+                return self::numberFormat($number, $decimals, '.', ',');
+                break;
+            default:
+                return $number;
+                break;
+        }
     }
 
     /**
