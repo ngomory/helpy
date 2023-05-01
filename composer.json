@@ -1,7 +1,6 @@
 {
     "name": "ngomory/helpy",
     "type": "library",
-    "version": "1.0.0",
     "description": "PHP package grouping together a multitude of small utility functions",
     "keywords": [
         "ngomory",
