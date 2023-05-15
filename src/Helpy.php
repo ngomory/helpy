@@ -112,4 +112,39 @@ class Helpy
 
         return $randomString;
     }
+
+    /**
+     * defaultSchemaColumn
+     *
+     * @param [type] $table
+     * @param string $group
+     * @param integer $state
+     * @return void
+     */
+    static function defaultSchemaColumn($table, string $group = 'defaut', int $state = 1)
+    {
+        switch ($group) {
+            case 'state':
+                // For state
+                $table->boolean('state')->default($state)->nullable();
+                $table->bigInteger('state_by')->nullable();
+                $table->dateTime('state_at')->nullable();
+                break;
+            case 'timestamp':
+                // For soft delete
+                $table->bigInteger('created_by')->nullable();
+                $table->dateTime('created_at')->nullable();
+                $table->bigInteger('updated_by')->nullable();
+                $table->dateTime('updated_at')->nullable();
+                $table->bigInteger('deleted_by')->nullable();
+                $table->dateTime('deleted_at')->nullable();
+                break;
+            default:
+                // Default table columns
+                $table->collation = 'utf8mb4_general_ci';
+                $table->increments('id')->unsigned();
+                $table->uuid('uuid')->unique()->nullable();
+                break;
+        }
+    }
 }
