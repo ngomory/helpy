@@ -147,4 +147,21 @@ class Helpy
                 break;
         }
     }
+
+    /**
+     * strToEmoji
+     *
+     * @param string $string
+     * @return string
+     */
+    static function strToEmoji(string $string): string
+    {
+        return implode(
+            '',
+            array_map(
+                fn ($letter) => mb_chr(ord($letter) % 32 + 0x1F1E5),
+                str_split($string)
+            )
+        );
+    }
 }
