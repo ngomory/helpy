@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class HelpyTest extends TestCase
 {
-    public function test_DateFormat()
+    public function testDateFormat()
     {
         $datetime = '2022-01-01 12:34:56';
 
@@ -30,7 +30,7 @@ class HelpyTest extends TestCase
         $this->assertEquals('', $result);
     }
 
-    public function test_DateToLocal()
+    public function testDateToLocal()
     {
         $datetime = '2022-01-01 12:34:56';
 
@@ -59,7 +59,7 @@ class HelpyTest extends TestCase
         $this->assertEquals('', $result);
     }
 
-    public function test_NumberFormat()
+    public function testNumberFormat()
     {
         $number = 651234.5648;
 
@@ -68,7 +68,7 @@ class HelpyTest extends TestCase
         $this->assertEquals('651 234,56', $result);
     }
 
-    public function test_NumberToLocal()
+    public function testNumberToLocal()
     {
         $number = 651234.5648;
 
@@ -81,9 +81,8 @@ class HelpyTest extends TestCase
         $this->assertEquals('651,234.56', $result);
     }
 
-    public function test_StrRandom()
+    public function testStrRandom()
     {
-
         $length = 10;
 
         // Test with default options
@@ -98,5 +97,12 @@ class HelpyTest extends TestCase
         ];
         $result = Helpy::strRandom($length, $options);
         $this->assertEquals($length, strlen($result));
+    }
+
+    public function teststrToEmoji()
+    {
+        $string = 'fr';
+        $result = Helpy::strToEmoji($string);
+        $this->assertEquals($result, '🇫🇷');
     }
 }
