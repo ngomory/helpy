@@ -183,7 +183,7 @@ class Helpy
      * 
      * @return void
      */
-    static function moduleFilter($model, string $filter, array $options = []): void
+    static function moduleFilter($model, string $filter, array $options = [])
     {
 
         $columns = $options['columns'] ?? ['id'];
@@ -328,7 +328,7 @@ class Helpy
         $namespace = $options['namespace'] ?? 'All';
         $authorized = $options['authorized'] ?? [];
         $regex_modules = $options['regex_modules'] ?? '/^(.*)\_(list|detail)(?:[:](.*))?$/i';
-        $regex_matches = $options['regex_matches'] ?? ['module' => 1, 'action' => 2, 'items' => 3];
+        $regex_matches = $options['regex_matches'] ?? ['module' => 1, 'action' => 2, 'item' => 3];
         $actions = $options['actions'] ?? ['list', 'detail'];
         $filters = $options['filters'] ?? [];
         $pages = $options['pages'] ?? [];
