@@ -371,6 +371,7 @@ class Helpy
                     $request->merge([
                         'filter' => $filters[$module] ?? $request->input('filter_' . $module),
                         'page' => $pages[$module] ?? $request->input('page_' . $module),
+                        'per_page' => $request->input('per_page_' . $module),
                     ]);
 
                     /**
