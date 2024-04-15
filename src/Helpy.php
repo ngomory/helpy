@@ -251,6 +251,17 @@ class Helpy
                                 );
                             }
                             break;
+                        case 'expired_at':
+                            $keyword_part = explode('/', $keword);
+                            if (count($keyword_part) == 1) {
+                                $model = $model->whereDate('expired_at', trim($keyword_part[0]));
+                            } else {
+                                $model = $model->whereBetween(
+                                    'expired_at',
+                                    [trim($keyword_part[0]), trim($keyword_part[1])]
+                                );
+                            }
+                            break;
                         case 'random':
                             if (trim($keword) == 'true') {
                                 $model = $model->inRandomOrder();
