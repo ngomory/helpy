@@ -181,7 +181,7 @@ class Helpy
      * @param string $filter The filter string containing filtering criteria.
      * @param array $options An associative array of additional options for customizing the filtering behavior.
      * 
-     * @return void
+     * @return \Illuminate\Database\Eloquent\Model
      */
     static function moduleFilter($model, string $filter, array $options = [])
     {
