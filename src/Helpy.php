@@ -277,7 +277,8 @@ class Helpy
                             }
                             break;
                         default:
-
+                            $kewords = explode(',', $keword);
+                            $model = $model->whereIn($zone, $kewords);
                             break;
                     }
                 } elseif (in_array($zone, array_keys($relations))) {
