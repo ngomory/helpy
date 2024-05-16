@@ -440,4 +440,74 @@ class Helpy
             'paginate' => $paginate,
         ];
     }
+
+    /**
+     * Sends a response with the specified results, paginate, and messages.
+     *
+     * @param array $results The results to include in the response.
+     * @param array $paginate The pagination information to include in the response.
+     * @param array $messages The messages to include in the response.
+     *
+     * @return void
+     */
+    static function responseResults(array $results, array $paginate = [], array $messages = []): void
+    {
+        self::responseJson(true, [
+            'results' => $results,
+            'paginate' => $paginate,
+            'messages' => $messages,
+        ]);
+    }
+
+    /**
+     * Sends an error response with the specified code, key, and message.
+     *
+     * @param int $code The error code. Defaults to 9999.
+     * @param string $key   The error key.
+     * @param string $msg   The error message. If neither $code nor $msg is specified, a default message is used.
+     *
+     * @return void
+     */
+    static function responseErrors(int $code = 9999, string $key = '', string $msg = ''): void
+    {
+        $msg = ($code != 9999 || !empty($msg)) ? $msg : "Oops! An error has occurred";
+        self::responseJson(false, [
+            'errors' => [
+                'code' => $code,
+                'key' => $key,
+                'msg' => $msg,
+            ]
+        ]);
+    }
+
+    /**
+     * This function sends a JSON response with the provided success status and data.
+     *
+     * @param bool $success Indicates whether the response is successful or not.
+     * @param array $datas An associative array containing the data to be included in the response.
+     *                      The array should contain the following keys: 'esults', 'paginate', 'errors', 'essages'.
+     *                      Defaults to an empty array for each key.
+     *
+     * @return void
+     */
+    static function responseJson(bool $success, array $datas = ['results' => [], 'paginate' => [], 'errors' => [], 'messages' => []]): void
+    {
+
+        $response = [
+            'success' => $success,
+            'results' => $datas['results'] ?? [],
+            'paginate' => $datas['paginate'] ?? [],
+            'errors' => $datas['errors'] ?? [],
+            'messages' => $datas['messages'] ?? [],
+        ];
+
+        if (empty($response['paginate'])) {
+            unset($response['paginate']);
+        }
+
+        header('Content-Type: application/json');
+
+        echo json_encode($response);
+        die();
+    }
 }
