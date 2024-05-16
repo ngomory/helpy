@@ -490,8 +490,12 @@ class Helpy
      *
      * @return void
      */
-    static function responseJson(bool $success, array $datas = ['results' => [], 'paginate' => [], 'errors' => [], 'messages' => []]): void
-    {
+    static function responseJson(
+        bool $success,
+        array $datas = ['results' => [], 'paginate' => [], 'errors' => [], 'messages' => []],
+        int $status = 200,
+        array $headers = ['Content-Type' => 'application/json']
+    ): void {
 
         $response = [
             'success' => $success,
@@ -505,9 +509,32 @@ class Helpy
             unset($response['paginate']);
         }
 
-        header('Content-Type: application/json');
+        self::responseHttp(
+            json_encode($response),
+            $status,
+            $headers
+        );
+    }
 
-        echo json_encode($response);
-        die();
+    /**
+     * Sends an HTTP response with the provided content, status code, and headers.
+     *
+     * @param string $content The content to be sent in the response.
+     * @param int $status The HTTP status code for the response. Default is 200.
+     * @param array $headers An associative array of headers to be sent with the response.
+     *
+     * @return void
+     */
+    static function responseHttp($content = '',  int $status = 200, array $headers = []): void
+    {
+
+        http_response_code($status);
+
+        foreach ($headers as $key => $value) {
+            header($key . ': ' . $value);
+        }
+
+        echo $content;
+        exit;
     }
 }
