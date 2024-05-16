@@ -89,12 +89,13 @@ class Helpy
      *
      * @param int $length The length of the result string. Default is 16.
      * @param array $options An associative array with 'include' and 'excluded' keys.
+     * @param string|null $options['characters'] Optional characters use in the random string. Default is an empty string.
      * @param string|null $options['include'] Optional characters to include in the random string. Default is an empty string.
      * @param string|null $options['excluded'] Optional characters to exclude from the random string. Default is an empty string.
      *
      * @return string A random string of the specified length, using the provided include and exclude characters.
      */
-    public static function strRandom(int $length = 16, array $options = ['include' => '', 'excluded' => '']): string
+    public static function strRandom(int $length = 16, array $options = ['characters' => '', 'include' => '', 'excluded' => '']): string
     {
 
         $characters = $options['characters'] ?? '';
