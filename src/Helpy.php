@@ -537,4 +537,27 @@ class Helpy
         echo $content;
         exit;
     }
+
+    /**
+     * Paginate the data of the provided model.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model The Eloquent model instance representing the data to be paginated.
+     *
+     * @return array An associative array containing the following keys:
+     *   - 'total': The total number of records in the database.
+     *   - 'count': The total number of records per page.
+     *   - 'per_page': The number of records per page.
+     *   - 'current_page': The current page number.
+     *   - 'last_page': The total number of pages.
+     */
+    static function paginateDatas($model): array
+    {
+        return [
+            'total' => $model->total(),
+            'count' => $model->count(),
+            'per_page' => (int) $model->perPage(),
+            'current_page' => $model->currentPage(),
+            'last_page' => $model->lastPage(),
+        ];
+    }
 }
