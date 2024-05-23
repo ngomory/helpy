@@ -54,8 +54,12 @@ class Helpy
      * @param string $thousandSeparator
      * @return string
      */
-    public static function numberFormat(float $number, int $decimals = 2, string $decimalSeparator = ',', string $thousandSeparator = ' '): string
-    {
+    public static function numberFormat(
+        float $number,
+        int $decimals = 2,
+        string $decimalSeparator = ',',
+        string $thousandSeparator = ' '
+    ): string {
         return number_format($number, $decimals, $decimalSeparator, $thousandSeparator);
     }
 
@@ -95,8 +99,10 @@ class Helpy
      *
      * @return string A random string of the specified length, using the provided include and exclude characters.
      */
-    public static function strRandom(int $length = 16, array $options = ['characters' => '', 'include' => '', 'excluded' => '']): string
-    {
+    public static function strRandom(
+        int $length = 16,
+        array $options = ['characters' => '', 'include' => '', 'excluded' => '']
+    ): string {
 
         $characters = $options['characters'] ?? '';
         if (empty($characters)) {
@@ -117,6 +123,88 @@ class Helpy
         }
 
         return $randomString;
+    }
+
+    /**
+     * setUrlDatas
+     * 
+     * Function allowing you to modify or replace a segment of a URL
+     *
+     * @param string $url The original URL
+     * @param array $datas
+     *   - 'scheme': string, optionnal key, Ex: https
+     *   - 'host': string, optionnal key, Ex: www.example.com .
+     *   - 'port': int, optionnal key, Ex: 2031.
+     *   - 'path': array, optionnal, Ex: ['article', 'create', ...].
+     *   - 'query': array, Ex: ['name' => 'value', ...]
+     *   - 'fragment': string, optionnal, Ex: contact.
+     * 
+     * @param array $options
+     *   - 'query_replace': bool, defaul false, Allows you to merge or replace query data.
+     *
+     * @return string New URL formatted with the specified datas
+     */
+    static function setUrlDatas(string $url, array $datas = [], array $options = []): string
+    {
+        /**
+         * Parse the original URL to extract its components.
+         */
+        $url_datas = parse_url($url);
+
+        /**
+         * Set the new scheme for the URL. If not provided, use the original scheme.
+         */
+        $scheme = ((isset($datas['scheme']) && is_string($datas['scheme'])) ?
+            $datas['scheme'] : ($url_datas['scheme'] ?? '')) . '://';
+
+        /**
+         * Set the new host for the URL. If not provided, use the original host.
+         */
+        $host = (isset($datas['host']) && is_string($datas['host'])) ?
+            $datas['host'] : ($url_datas['host'] ?? '');
+
+        /**
+         * Set the new port for the URL. If not provided, use the original port.
+         */
+        $port = (isset($datas['port']) && is_int($datas['port'])) ?
+            $datas['port'] : ($url_datas['port'] ?? '');
+        $port = $port ? ':' . $port : '';
+
+        /**
+         * Set the new path for the URL. If not provided, use the original path.
+         */
+        $path = (isset($datas['path']) && is_array($datas['path'])) ?
+            '/' . implode('/', $datas['path']) : ($url_datas['path'] ?? '');
+        $path = ($path != '/') ? $path : '';
+
+        /**
+         * Set the new query parameters for the URL. If not provided, use the original query parameters.
+         * If the 'query_replace' option is set to false, merge the new query parameters with the original ones.
+         */
+        parse_str($url_datas['query'] ?? '', $url_datas_query);
+        $new_query = (isset($datas['query']) && is_array($datas['query'])) ?
+            $datas['query'] : [];
+
+        $option_query_replace = isset($options['query_replace']) && is_bool($options['query_replace']) ?
+            $options['query_replace'] : false;
+
+        $query = ($option_query_replace == false) ?
+            array_merge($url_datas_query, $new_query) :
+            $new_query;
+
+        $query = !empty($query) ? '?' . http_build_query($query) : '';
+
+        /**
+         * Set the new fragment for the URL. If not provided, use the original fragment.
+         */
+        $fragment = (isset($datas['fragment']) && is_string($datas['fragment'])) ?
+            $datas['fragment'] : ($url_datas['fragment'] ?? '');
+        $fragment = ($fragment != '') ? '#' . $fragment : '';
+
+        /**
+         * Construct the modified URL by combining the new scheme, host, port, path, query, and fragment.
+         */
+        return $scheme . $host . $port . $path . $query . $fragment;
     }
 
     /**
