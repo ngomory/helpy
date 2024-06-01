@@ -488,35 +488,38 @@ class Helpy
                     /**
                      * Data recovery
                      */
-                    $datas = $Controller->{$controllerAction}($request, $item);
-                    $datas = $datas->getData(true);
+                    if (method_exists($Controller, $controllerAction)) {
 
-                    if (isset($datas['results']) && !empty($datas['results'])) {
+                        $datas = $Controller->{$controllerAction}($request, $item);
+                        $datas = $datas->getData(true);
 
-                        $results = $datas['results'];
+                        if (isset($datas['results']) && !empty($datas['results'])) {
 
-                        if ($action == 'list') {
+                            $results = $datas['results'];
 
-                            $modulKey = $plurals[$module] ?? $module . 's';
+                            if ($action == 'list') {
 
-                            if (isset($datas['paginate'])) {
-                                $paginate[$module] = $datas['paginate'] ?? [];
+                                $modulKey = $plurals[$module] ?? $module . 's';
+
+                                if (isset($datas['paginate'])) {
+                                    $paginate[$module] = $datas['paginate'] ?? [];
+                                }
+                            } else {
+                                $modulKey = $module;
                             }
-                        } else {
-                            $modulKey = $module;
-                        }
 
-                        if (isset($results_keys[$module])) {
+                            if (isset($results_keys[$module])) {
 
-                            $key = $results_keys[$module];
+                                $key = $results_keys[$module];
 
-                            if ($key == '.') {
-                                $list[$modulKey] =  $results;
-                            } elseif (isset($results[$key])) {
-                                $list[$modulKey] =  $results[$key];
+                                if ($key == '.') {
+                                    $list[$modulKey] =  $results;
+                                } elseif (isset($results[$key])) {
+                                    $list[$modulKey] =  $results[$key];
+                                }
+                            } else {
+                                $list[$modulKey] =  $results[$modulKey] ?? [];
                             }
-                        } else {
-                            $list[$modulKey] =  $results[$modulKey] ?? [];
                         }
                     }
                 }
