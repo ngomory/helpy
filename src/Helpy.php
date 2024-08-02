@@ -283,7 +283,6 @@ class Helpy
          * Recovery of the filter list
          */
         $filters = explode('|', $filter);
-
         foreach ($filters as $part) {
 
             /**
@@ -428,13 +427,14 @@ class Helpy
         $modules = $options['modules'] ?? $request->modules;
         $namespace = $options['namespace'] ?? 'All';
         $authorized = $options['authorized'] ?? [];
-        $regex_modules = $options['regex_modules'] ?? '/^(.*)\_(list|detail)(?:[:](.*))?$/i';
-        $regex_matches = $options['regex_matches'] ?? ['module' => 1, 'action' => 2, 'item' => 3];
         $actions = $options['actions'] ?? ['list', 'detail'];
+        $regex_modules = $options['regex_modules'] ?? '/^(.*)\_(' . implode('|', $actions) . ')(?:[:](.*))?$/i';
+        $regex_matches = $options['regex_matches'] ?? ['module' => 1, 'action' => 2, 'item' => 3];
         $filters = $options['filters'] ?? [];
         $pages = $options['pages'] ?? [];
         $plurals = $options['plurals'] ?? [];
         $results_keys = $options['results_keys'] ?? [];
+        $responses_keys = $options['responses_keys'] ?? [];
 
         $modules = explode('|', $modules);
 
@@ -491,12 +491,16 @@ class Helpy
                     if (method_exists($Controller, $controllerAction)) {
 
                         $datas = $Controller->{$controllerAction}($request, $item);
+
                         $datas = $datas->getData(true);
 
                         if (isset($datas['results']) && !empty($datas['results'])) {
 
                             $results = $datas['results'];
 
+                            /**
+                             * get module modulKey
+                             */
                             if ($action == 'list') {
 
                                 $modulKey = $plurals[$module] ?? $module . 's';
@@ -504,13 +508,23 @@ class Helpy
                                 if (isset($datas['paginate'])) {
                                     $paginate[$module] = $datas['paginate'] ?? [];
                                 }
+                            } elseif (isset($responses_keys[$module . '_' . $action])) {
+
+                                $modulKey = $responses_keys[$module . '_' . $action];
                             } else {
                                 $modulKey = $module;
                             }
 
-                            if (isset($results_keys[$module])) {
-
-                                $key = $results_keys[$module];
+                            /**
+                             * 
+                             */
+                            if (
+                                isset($results_keys[$module]) ||
+                                isset($results_keys[$module . '_' . $action])
+                            ) {
+                                $key = $results_keys[$module . '_' . $action]  ??
+                                    $results_keys[$module] ??
+                                    null;
 
                                 if ($key == '.') {
                                     $list[$modulKey] =  $results;
@@ -518,6 +532,7 @@ class Helpy
                                     $list[$modulKey] =  $results[$key];
                                 }
                             } else {
+
                                 $list[$modulKey] =  $results[$modulKey] ?? [];
                             }
                         }
@@ -532,6 +547,33 @@ class Helpy
         ];
     }
 
+    static function apiResultLaravel(array $results = [], array $paginate = [], array $messages = [])
+    {
+
+        $options = [
+            'paginate' => $paginate,
+            'messages' => $messages,
+            'framework' => 'laravel'
+        ];
+
+        if (empty($options['paginate'])) {
+            unset($options['paginate']);
+        }
+
+        return self::apiResults(
+            $results,
+            $options
+        );
+    }
+
+    static function apiErrorLaravel(int $code = 9999, string $key = '', string $msg = '', array $messages = [])
+    {
+        return self::apiErrors(
+            ['code' => $code, 'key' => $key, 'msg' => $msg],
+            ['messages' => $messages, 'framework' => 'laravel']
+        );
+    }
+
     /**
      * Sends a response with the specified results, paginate, and messages.
      *
@@ -541,13 +583,24 @@ class Helpy
      *
      * @return void
      */
-    static function responseResults(array $results, array $paginate = [], array $messages = []): void
+    static function apiResults(array $datas, array $options = [])
     {
-        self::responseJson(true, [
-            'results' => $results,
-            'paginate' => $paginate,
-            'messages' => $messages,
-        ]);
+
+        $paginate = $options['paginate'] ?? [];
+        $messages = $options['messages'] ?? [];
+        $framework = $options['framework'] ?? 'default';
+
+        return self::apiJson(
+            true,
+            [
+                'results' => $datas,
+                'paginate' => $paginate,
+                'messages' => $messages,
+            ],
+            200,
+            ['Content-Type' => 'application/json'],
+            $framework
+        );
     }
 
     /**
@@ -559,16 +612,32 @@ class Helpy
      *
      * @return void
      */
-    static function responseErrors(int $code = 9999, string $key = '', string $msg = ''): void
+    static function apiErrors(array $datas, array $options = [])
     {
+
+        $code = $datas['code'] ?? 9999;
+        $key = $datas['key'] ?? '';
+        $msg = $datas['msg'] ?? '';
+
         $msg = ($code != 9999 || !empty($msg)) ? $msg : "Oops! An error has occurred";
-        self::responseJson(false, [
-            'errors' => [
-                'code' => $code,
-                'key' => $key,
-                'msg' => $msg,
-            ]
-        ]);
+
+        $framework = $options['framework'] ?? 'default';
+        $messages = $options['messages'] ?? [];
+
+        return self::apiJson(
+            false,
+            [
+                'errors' => [
+                    'code' => $code,
+                    'key' => $key,
+                    'msg' => $msg,
+                ],
+                'messages' => $messages,
+            ],
+            200,
+            ['Content-Type' => 'application/json'],
+            $framework
+        );
     }
 
     /**
@@ -581,14 +650,15 @@ class Helpy
      *
      * @return void
      */
-    static function responseJson(
+    static function apiJson(
         bool $success,
         array $datas = ['results' => [], 'paginate' => [], 'errors' => [], 'messages' => []],
         int $status = 200,
-        array $headers = ['Content-Type' => 'application/json']
-    ): void {
+        array $headers = ['Content-Type' => 'application/json'],
+        string $framework = 'default'
+    ) {
 
-        $response = [
+        $content = [
             'success' => $success,
             'results' => $datas['results'] ?? [],
             'paginate' => $datas['paginate'] ?? [],
@@ -596,14 +666,15 @@ class Helpy
             'messages' => $datas['messages'] ?? [],
         ];
 
-        if (empty($response['paginate'])) {
-            unset($response['paginate']);
+        if (empty($content['paginate'])) {
+            unset($content['paginate']);
         }
 
-        self::responseHttp(
-            json_encode($response),
+        return self::responseHttp(
+            $content,
             $status,
-            $headers
+            $headers,
+            $framework
         );
     }
 
@@ -616,17 +687,38 @@ class Helpy
      *
      * @return void
      */
-    static function responseHttp($content = '',  int $status = 200, array $headers = []): void
+    static function responseHttp($content = '',  int $status = 200, array $headers = [], string $framework = 'default')
     {
 
-        http_response_code($status);
+        switch ($framework) {
 
-        foreach ($headers as $key => $value) {
-            header($key . ': ' . $value);
+            case 'laravel':
+
+                $contentType = $headers['Content-Type'] ?? null;
+
+                if (function_exists('response')) {
+                    if ($contentType == 'application/json') {
+                        $content = !is_array($content) ? json_decode($content, true) : $content;
+                        return response()->json($content, $status, $headers);
+                    }
+                    return response($content, $status, $headers);
+                }
+                return null;
+                break;
+
+            default:
+
+                http_response_code($status);
+
+                foreach ($headers as $key => $value) {
+                    header($key . ': ' . $value);
+                }
+
+                echo $content;
+                exit;
+
+                break;
         }
-
-        echo $content;
-        exit;
     }
 
     /**
